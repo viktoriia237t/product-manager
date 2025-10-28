@@ -24,7 +24,7 @@ export default function ProductList() {
     return (
         <div className="max-w-5xl w-full mx-auto p-6 gap-8">
             <div className={'flex items-center gap-8 justify-between pb-8'}>
-                <h2 className="text-3xl font-bold mb-6 text-center">Products</h2>
+                <h2 className="text-3xl font-bold text-center">Products</h2>
                     <Button color="primary" variant="solid" onPress={() => {
                     console.log("Open modal");
                     setAddOpen(true);

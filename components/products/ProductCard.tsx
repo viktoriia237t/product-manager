@@ -2,7 +2,7 @@
 import React, {useState} from "react";
 import {Card, CardHeader, CardBody, CardFooter} from "@heroui/card";
 import {Divider} from "@heroui/divider";
-import ProductEditModal from "./ProductEditModal";
+import ProductModal from "./ProductModal";
 import ProductDeleteModal from "./ProductDeleteModal";
 import {Button} from "@heroui/button";
 
@@ -22,7 +22,6 @@ export default function ProductCard({product, categories, onUpdate, onDelete}) {
                 <CardBody>
                     <div className={'flex flex-col justify-between h-full'}>
                         <p className={'text-center text-sm'}>{product.description || "No description"}</p>
-                        <Divider/>
                         <div className={'flex justify-between '}>
                             <div className={'text-gray-600'}>Category:</div>
                             <div className={'text-md font-semibold'}>
@@ -49,7 +48,7 @@ export default function ProductCard({product, categories, onUpdate, onDelete}) {
                     </Button>
                 </CardFooter>
             </Card>
-            <ProductEditModal
+            <ProductModal
                 categories={categories}
                 open={editOpen}
                 onOpenChange={setEditOpen}

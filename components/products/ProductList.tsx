@@ -1,31 +1,41 @@
 'use client'
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useMemo} from "react";
 import ProductCard from "../../components/products/ProductCard";
 import {Button} from "@heroui/button";
 import {Skeleton} from "@heroui/skeleton";
 import {Card} from "@heroui/card";
-import ProductCreateModal from "@/components/products/ProductCreateModal";
 import {useProducts} from "@/hooks/useProducts";
+import ProductModal from "@/components/products/ProductModal";
+import Category from "@/components/products/Category";
 
 export default function ProductList() {
-    const { products, categories, loading, fetchProducts, handleAdd, handleUpdate, handleDelete } = useProducts();
+    const {products, categories, loading, fetchProducts, handleAdd, handleUpdate, handleDelete} = useProducts();
     const [page, setPage] = useState(1);
     const [addOpen, setAddOpen] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState("all");
 
+    const productsWithCategory = useMemo(() => {
+        return products.map(product => {
+            const category = categories.find(c => c.id === product.categoryId);
+            return {
+                ...product,
+                categoryName: category ? category.name : "No category"
+            };
+        });
+    }, [products, categories]);
+    const handleCategorySelect = (categoryId) => {
+        setSelectedCategory(categoryId);
+        setPage(1);
+    };
     useEffect(() => {
-        fetchProducts(page);
-    }, [page]);
-
-    const productsWithCategory = products.map(product => {
-        const category = categories.find(c => c.id === product.categoryId);
-        return { ...product, categoryName: category ? category.name : "No category" };
-    });
+        fetchProducts(page, selectedCategory);
+    }, [page, selectedCategory]);
 
     return (
         <div className="max-w-5xl w-full mx-auto p-6 gap-8">
             <div className={'flex items-center gap-8 justify-between pb-8'}>
                 <h2 className="text-3xl font-bold text-center">Products</h2>
-                    <Button color="primary" variant="solid" onPress={() => {
+                <Button color="primary" variant="solid" onPress={() => {
                     console.log("Open modal");
                     setAddOpen(true);
                 }}>
@@ -33,16 +43,19 @@ export default function ProductList() {
                 </Button>
             </div>
 
+            <div className={'mb-4'}>
+                <Category categories={categories} selectedCategory={selectedCategory} onSelectCategory={handleCategorySelect}/>
+            </div>
 
             <div className="grid md:grid-cols-3 lg:grid-cols-3 gap-8">
                 {loading ? (
-                    Array.from({ length: 6 }).map((_, i) => (
+                    Array.from({length: 6}).map((_, i) => (
                         <Card key={i} className="w-[304px] space-y-5 p-4" radius="lg">
-                            <Skeleton className="rounded-lg h-24 bg-default" isLoaded={false} />
+                            <Skeleton className="rounded-lg h-24 bg-default" isLoaded={false}/>
                             <div className="space-y-3">
-                                <Skeleton className="w-3/5 h-3 rounded-lg bg-default" isLoaded={false} />
-                                <Skeleton className="w-4/5 h-3 rounded-lg bg-default-300" isLoaded={false} />
-                                <Skeleton className="w-2/5 h-3 rounded-lg bg-default-200" isLoaded={false} />
+                                <Skeleton className="w-3/5 h-3 rounded-lg bg-default" isLoaded={false}/>
+                                <Skeleton className="w-4/5 h-3 rounded-lg bg-default-300" isLoaded={false}/>
+                                <Skeleton className="w-2/5 h-3 rounded-lg bg-default-200" isLoaded={false}/>
                             </div>
                         </Card>
                     ))
@@ -88,7 +101,7 @@ export default function ProductList() {
                     <span className="self-center">Список продуктів порожній</span>
                 )
             }
-            <ProductCreateModal
+            <ProductModal
                 open={addOpen}
                 onOpenChange={setAddOpen}
                 categories={categories}

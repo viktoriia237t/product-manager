@@ -10,10 +10,14 @@ export function useProducts(limit = 6) {
     const [categories, setCategories] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    const fetchProducts = async (page = 1) => {
+    const fetchProducts = async (page = 1, categoryId = 'all') => {
         setLoading(true);
         try {
-            const res = await fetch(`${PRODUCTS_API}?page=${page}&limit=${limit}`);
+            const url = categoryId === "all"
+                ? `${PRODUCTS_API}?page=${page}&limit=${limit}`
+                : `${CATEGORIES_API}/${categoryId}/products?page=${page}&limit=${limit}`;
+
+            const res = await fetch(url);
             if (!res.ok) throw new Error("Failed to fetch products");
             const data = await res.json();
 
@@ -78,8 +82,9 @@ export function useProducts(limit = 6) {
 
 
     const handleUpdate = async (updatedProduct) => {
+        console.log(updatedProduct);
         try {
-            const res = await fetch(`${PRODUCTS_API}/${updatedProduct.id}`, {
+            const res = await fetch(`${CATEGORIES_API}/${updatedProduct.categoryId}/products/${updatedProduct.id}`, {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedProduct),

@@ -5,33 +5,24 @@ import {Input, Textarea} from "@heroui/input";
 import {Button} from "@heroui/button";
 import {Select, SelectItem} from "@heroui/select";
 
-export default function ProductCreateModal({product, categories, open, onOpenChange, onSave}) {
+export default function ProductModal({
+                                         product = null,
+                                         categories = [],
+                                         open,
+                                         onOpenChange,
+                                         onSave
+                                     }) {
+    const isEdit = !!product;
     const [name, setName] = useState(product?.name || "");
     const [price, setPrice] = useState(product?.price || 0);
     const [description, setDescription] = useState(product?.description || "");
     const [categoryId, setCategoryId] = useState(product?.categoryId || "");
-
-    useEffect(() => {
-        setName(product?.name || "");
-        setPrice(product?.price || 0);
-        setDescription(product?.description || "");
-        setCategoryId(product?.categoryId || "");
-    }, [product]);
-    const handleSave = () => {
-        if (!validate()) return;
-        onSave({name, price, description, categoryId});
-        onOpenChange(false);
-        setName("");
-        setPrice(0);
-        setDescription("");
-        setCategoryId("");
-    };
-
     const [errors, setErrors] = useState({
         name: "",
-        price: "",
+        price: 0,
         categoryId: ""
     });
+
     const validate = () => {
         const newErrors = {};
         if (!name.trim()) newErrors.name = "Name is required";
@@ -43,12 +34,39 @@ export default function ProductCreateModal({product, categories, open, onOpenCha
         return Object.keys(newErrors).length === 0;
     };
 
+
+    useEffect(() => {
+        setName(product?.name || "");
+        setPrice(product?.price || 0);
+        setDescription(product?.description || "");
+        setCategoryId(product?.categoryId || "");
+    }, [product]);
+
+    const handleSave = () => {
+        if (!validate()) return;
+
+        const payload = { ...product, name, price, description, categoryId };
+        onSave(payload);
+        onOpenChange(false);
+
+        if (!isEdit) {
+            setName("");
+            setPrice(0);
+            setDescription("");
+            setCategoryId("");
+        }
+    };
+
+
     return (
         <Modal isOpen={open} onOpenChange={onOpenChange} isDismissable>
             <ModalContent>
                 {(onClose) => (
                     <>
-                        <ModalHeader>Create Product&nbsp;<span className="text-blue-500">{name}</span></ModalHeader>
+                        <ModalHeader>
+                            {isEdit ? "Edit Product" : "Create Product"}&nbsp;
+                             <span className="text-blue-500">{name}</span>
+                        </ModalHeader>
                         <ModalBody className="flex flex-col gap-4">
                             <div>
                                 <Input

@@ -37,7 +37,7 @@ export default function ProductModal({
 
     useEffect(() => {
         setName(product?.name || "");
-        setPrice(product?.price || 0);
+        setPrice(product?.price || "");
         setDescription(product?.description || "");
         setCategoryId(product?.categoryId || "");
     }, [product]);
